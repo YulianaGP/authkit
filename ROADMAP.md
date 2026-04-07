@@ -146,15 +146,18 @@
 
 ---
 
-## SESIÓN 3 — OAUTH + RATE LIMITING
+## SESIÓN 3 — OAUTH + RATE LIMITING ✅ COMPLETADA (2026-04-07)
 **Objetivo:** Google, GitHub y Discord OAuth funcionando + rate limiting activo
 
-- [ ] Provider Google en `auth.ts`
-- [ ] Provider GitHub en `auth.ts`
-- [ ] Provider Discord en `auth.ts`
-- [ ] Botones OAuth en UI de login/register
-- [ ] Rate limiting: 5 intentos → bloqueo temporal 15 min (Upstash Redis)
-- [ ] Mostrar error claro al usuario cuando está bloqueado
+- [x] Provider Google en `auth.ts` + credenciales configuradas
+- [x] Provider GitHub en `auth.ts` + credenciales configuradas
+- [x] Provider Discord en `auth.ts` + credenciales configuradas
+- [x] `allowDangerousEmailAccountLinking` en todos los providers OAuth
+- [x] Botones OAuth en UI de login/register (Google, GitHub, Discord)
+- [x] Rate limiting: 5 intentos → bloqueo con tiempo restante (Upstash Redis)
+- [x] Prefijo `authkit:login` para aislar keys en DB compartida de Upstash
+- [x] Mensaje de error con minutos restantes visible en LoginForm
+- [x] Probado: 6to intento muestra mensaje de bloqueo ✅
 
 ---
 
@@ -217,6 +220,7 @@
 |---|---|---|
 | 2026-04-01 | 1 — Fundación | shadcn/ui, Prisma schema, NextAuth v5, proxy.ts, security headers, rutas, .env.example ✅ |
 | 2026-04-02 | 2 — Credentials auth + email | Zod schemas, tokens, Resend emails, Server Actions (register/login/verify/forgot/reset), UI completa ✅ |
+| 2026-04-07 | 3 — OAuth + rate limiting | Google/GitHub/Discord OAuth, rate limiting 5 intentos/15min con Upstash ✅ |
 
 ---
 

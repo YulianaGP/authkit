@@ -2,9 +2,11 @@
 
 import { AuthError } from "next-auth"
 import { redirect } from "next/navigation"
+import { headers } from "next/headers"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
 import { signIn, signOut } from "@/auth"
+import { loginRatelimit } from "@/lib/rate-limit"
 import {
   generateVerificationToken,
   generatePasswordResetToken,
@@ -59,6 +61,22 @@ export async function login(data: LoginInput): Promise<ActionResult> {
   if (!parsed.success) return { error: "Invalid fields" }
 
   const { email, password } = parsed.data
+
+  // Rate limit by IP — 5 attempts per 15 minutes
+  const headersList = await headers()
+  const ip =
+    headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
+    headersList.get("x-real-ip") ??
+    "anonymous"
+
+  const { success, reset } = await loginRatelimit.limit(ip)
+
+  if (!success) {
+    const retryAfterMinutes = Math.ceil((reset - Date.now()) / 1000 / 60)
+    return {
+      error: `Too many login attempts. Please try again in ${retryAfterMinutes} minute${retryAfterMinutes === 1 ? "" : "s"}.`,
+    }
+  }
 
   const user = await db.user.findUnique({ where: { email } })
 
