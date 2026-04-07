@@ -1,21 +1,97 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
+import { getAllUsers } from "@/actions/sessions"
+import { Badge } from "@/components/ui/badge"
 
-// Session 5 — Admin panel (ADMIN role only, double-checked here + proxy.ts)
+export const metadata = { title: "Admin — AuthKit" }
+
 export default async function AdminPage() {
   const session = await auth()
+  if (session?.user?.role !== "ADMIN") redirect("/dashboard")
 
-  if (session?.user?.role !== "ADMIN") {
-    redirect("/dashboard")
-  }
+  const users = await getAllUsers()
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Admin panel</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        User management and session oversight
-      </p>
-      {/* TODO: UserTable, SessionManagement (Session 5) */}
+    <div className="w-full max-w-4xl mx-auto px-4 py-8 space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Admin panel</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {users.length} user{users.length !== 1 ? "s" : ""} registered
+        </p>
+      </div>
+
+      {/* Mobile: card list / Desktop: table */}
+      <div className="hidden sm:block rounded-xl border overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-muted text-muted-foreground">
+            <tr>
+              <th className="text-left px-4 py-3 font-medium">User</th>
+              <th className="text-left px-4 py-3 font-medium">Role</th>
+              <th className="text-left px-4 py-3 font-medium">Status</th>
+              <th className="text-right px-4 py-3 font-medium">Sessions</th>
+              <th className="text-right px-4 py-3 font-medium">Events</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {users.map((user) => (
+              <tr key={user.id} className="hover:bg-muted/50 transition-colors">
+                <td className="px-4 py-3">
+                  <p className="font-medium truncate max-w-[200px]">{user.name ?? "—"}</p>
+                  <p className="text-muted-foreground truncate max-w-[200px]">{user.email}</p>
+                </td>
+                <td className="px-4 py-3">
+                  <Badge variant={user.role === "ADMIN" ? "default" : "secondary"}>
+                    {user.role}
+                  </Badge>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex flex-wrap gap-1">
+                    {user.emailVerified ? (
+                      <Badge variant="secondary">Verified</Badge>
+                    ) : (
+                      <Badge variant="destructive">Unverified</Badge>
+                    )}
+                    {user.twoFactorEnabled && (
+                      <Badge variant="secondary">2FA</Badge>
+                    )}
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-right">{user._count.sessions}</td>
+                <td className="px-4 py-3 text-right">{user._count.auditLogs}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Mobile card list */}
+      <ul className="sm:hidden space-y-3">
+        {users.map((user) => (
+          <li key={user.id} className="rounded-xl border p-4 space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="font-medium truncate">{user.name ?? "—"}</p>
+                <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+              </div>
+              <Badge variant={user.role === "ADMIN" ? "default" : "secondary"} className="shrink-0">
+                {user.role}
+              </Badge>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {user.emailVerified ? (
+                <Badge variant="secondary">Verified</Badge>
+              ) : (
+                <Badge variant="destructive">Unverified</Badge>
+              )}
+              {user.twoFactorEnabled && <Badge variant="secondary">2FA</Badge>}
+            </div>
+            <div className="flex gap-4 text-xs text-muted-foreground">
+              <span>{user._count.sessions} session{user._count.sessions !== 1 ? "s" : ""}</span>
+              <span>{user._count.auditLogs} event{user._count.auditLogs !== 1 ? "s" : ""}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

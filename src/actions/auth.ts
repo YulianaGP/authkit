@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
 import { signIn, signOut } from "@/auth"
 import { loginRatelimit } from "@/lib/rate-limit"
+import { createAuditLog } from "@/lib/audit"
 import {
   generateVerificationToken,
   generatePasswordResetToken,
@@ -104,10 +105,13 @@ export async function login(data: LoginInput): Promise<ActionResult> {
     await signIn("credentials", { email, password, redirect: false })
   } catch (error) {
     if (error instanceof AuthError) {
+      await createAuditLog({ userId: user.id, action: "LOGIN_FAILED", headers: headersList, success: false })
       return { error: "Invalid email or password" }
     }
     throw error
   }
+
+  await createAuditLog({ userId: user.id, action: "LOGIN", headers: headersList })
 
   redirect("/dashboard")
 }

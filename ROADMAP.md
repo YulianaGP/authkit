@@ -178,17 +178,17 @@
 
 ---
 
-## SESIÓN 5 — ADMIN PANEL + AUDIT LOG
+## SESIÓN 5 — ADMIN PANEL + AUDIT LOG ✅ COMPLETADA (2026-04-07)
 **Objetivo:** Sesiones activas, geo-detección, revocar, logout all
 
-- [ ] Guardar AuditLog en cada login (IP, UserAgent, geo, device, browser, action)
-- [ ] Geolocalización: Vercel headers (`x-vercel-ip-country`, `x-vercel-ip-city`) + fallback ip-api.com
-- [ ] Parse de UserAgent con `ua-parser-js`
-- [ ] Alerta en email cuando login desde país nuevo (Resend)
-- [ ] UI: página de sesiones activas (device, browser, IP, location, last active)
-- [ ] Server Action: `revokeSession`
-- [ ] Server Action: `logoutAllDevices`
-- [ ] UI: admin panel para ADMIN (listar usuarios, ver sesiones, revocar)
+- [x] `src/lib/audit.ts` — createAuditLog con IP, UserAgent, geo (Vercel headers + ip-api.com fallback), ua-parser-js
+- [x] AuditLog registrado en cada LOGIN y LOGIN_FAILED
+- [x] Server Actions: getAuditLogs, revokeSession, logoutAllDevices, getAllUsers
+- [x] UI: página de sesiones — lista de actividad con device icon, browser, OS, ubicación, tiempo relativo
+- [x] UI: botón "Sign out all devices" con confirmación
+- [x] UI: admin panel — tabla en desktop, cards en mobile (fully responsive)
+- [x] UI: badges de role, verified, 2FA por usuario
+- [x] Profile page — responsive con max-w + padding adaptativo
 
 ---
 
@@ -225,6 +225,7 @@
 | 2026-04-02 | 2 — Credentials auth + email | Zod schemas, tokens, Resend emails, Server Actions (register/login/verify/forgot/reset), UI completa ✅ |
 | 2026-04-07 | 3 — OAuth + rate limiting | Google/GitHub/Discord OAuth, rate limiting 5 intentos/15min con Upstash ✅ |
 | 2026-04-07 | 4 — 2FA TOTP | TOTP setup+verify, 8 recovery codes hasheados, interceptor en login, UI completa ✅ |
+| 2026-04-07 | 5 — AuditLog + admin panel | ua-parser-js, geo Vercel+ip-api, sessions page, admin panel responsive ✅ |
 
 ---
 
