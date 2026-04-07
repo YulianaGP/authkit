@@ -161,17 +161,20 @@
 
 ---
 
-## SESIÓN 4 — 2FA (TOTP)
+## SESIÓN 4 — 2FA (TOTP) ✅ COMPLETADA (2026-04-07)
 **Objetivo:** Setup de 2FA, verificación en login, recovery codes
 
-- [ ] Server Action: `setup2FA` — genera secreto TOTP + QR code
-- [ ] Server Action: `enable2FA` — verifica primer código + guarda secreto
-- [ ] Server Action: `disable2FA`
-- [ ] Server Action: `verify2FA` — verifica código en login
-- [ ] Generar 8 recovery codes al activar 2FA (guardados hasheados en DB)
-- [ ] UI: página de setup 2FA con QR code
-- [ ] UI: paso de 2FA en el flujo de login
-- [ ] UI: mostrar recovery codes una sola vez
+- [x] `src/lib/two-factor.ts` — generateTOTPSecret, generateQRCodeDataURL, verifyTOTPCode, generateRecoveryCodes, hashRecoveryCodes, verifyRecoveryCode
+- [x] Server Action: `setup2FA` — genera secreto TOTP + QR code data URL
+- [x] Server Action: `enable2FA` — verifica primer código + activa 2FA + genera 8 recovery codes hasheados
+- [x] Server Action: `disable2FA` — requiere código TOTP válido para desactivar
+- [x] Server Action: `verifyTwoFactor` — acepta TOTP o recovery code, marca recovery code como usado
+- [x] Login action: intercepta usuarios con 2FA activo → redirige a /two-factor?userId=...
+- [x] UI: `TwoFactorSetup` — flujo en 2 pasos (idle → scan QR → verificar código)
+- [x] UI: `TwoFactorForm` — acepta TOTP o recovery code, toggle entre modos
+- [x] UI: `RecoveryCodesDisplay` — muestra 8 códigos en grid, botón copy, mostrados solo una vez
+- [x] UI: Profile page con sección de 2FA setup integrada
+- [x] proxy.ts actualizado — /two-factor en authRoutes
 
 ---
 
@@ -221,6 +224,7 @@
 | 2026-04-01 | 1 — Fundación | shadcn/ui, Prisma schema, NextAuth v5, proxy.ts, security headers, rutas, .env.example ✅ |
 | 2026-04-02 | 2 — Credentials auth + email | Zod schemas, tokens, Resend emails, Server Actions (register/login/verify/forgot/reset), UI completa ✅ |
 | 2026-04-07 | 3 — OAuth + rate limiting | Google/GitHub/Discord OAuth, rate limiting 5 intentos/15min con Upstash ✅ |
+| 2026-04-07 | 4 — 2FA TOTP | TOTP setup+verify, 8 recovery codes hasheados, interceptor en login, UI completa ✅ |
 
 ---
 

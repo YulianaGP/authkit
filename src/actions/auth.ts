@@ -90,6 +90,16 @@ export async function login(data: LoginInput): Promise<ActionResult> {
     return { error: "Email not verified. A new verification link has been sent." }
   }
 
+  const passwordMatch = await bcrypt.compare(password, user.password)
+  if (!passwordMatch) {
+    return { error: "Invalid email or password" }
+  }
+
+  // If 2FA is enabled, redirect to the verification step before signing in
+  if (user.twoFactorEnabled) {
+    redirect(`/two-factor?userId=${user.id}`)
+  }
+
   try {
     await signIn("credentials", { email, password, redirect: false })
   } catch (error) {

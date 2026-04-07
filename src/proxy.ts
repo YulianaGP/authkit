@@ -5,8 +5,9 @@ import type { NextRequest } from "next/server"
 // Routes that require authentication
 const protectedRoutes = ["/dashboard", "/profile", "/sessions", "/admin"]
 
-// Routes only accessible when NOT authenticated
-const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password", "/verify-email"]
+// Routes only accessible when NOT authenticated (two-factor is the exception:
+// it needs userId in searchParams and is visited before the session exists)
+const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password", "/verify-email", "/two-factor"]
 
 // Routes only accessible by ADMIN
 const adminRoutes = ["/admin"]
