@@ -20,9 +20,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 
   providers: [
-    Google,
-    GitHub,
-    Discord,
+    Google({ allowDangerousEmailAccountLinking: true }),
+    GitHub({ allowDangerousEmailAccountLinking: true }),
+    Discord({ allowDangerousEmailAccountLinking: true }),
 
     Credentials({
       credentials: {
@@ -63,8 +63,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, user }) {
       if (user && session.user) {
         session.user.id = user.id
-        session.user.role = (user as { role: string }).role
-        session.user.twoFactorEnabled = (user as { twoFactorEnabled: boolean }).twoFactorEnabled
+        const dbUser = user as unknown as { role: string; twoFactorEnabled: boolean }
+        session.user.role = dbUser.role as import("@prisma/client").Role
+        session.user.twoFactorEnabled = dbUser.twoFactorEnabled ?? false
       }
       return session
     },

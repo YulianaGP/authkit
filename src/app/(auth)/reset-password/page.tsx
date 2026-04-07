@@ -1,4 +1,9 @@
-// Session 2 — Reset password form (receives token via searchParams)
+import Link from "next/link"
+import { ResetPasswordForm } from "@/components/auth/reset-password-form"
+import { Button } from "@/components/ui/button"
+
+export const metadata = { title: "Reset password — AuthKit" }
+
 export default async function ResetPasswordPage(props: {
   searchParams: Promise<{ token?: string }>
 }) {
@@ -6,22 +11,27 @@ export default async function ResetPasswordPage(props: {
 
   if (!token) {
     return (
-      <div className="rounded-xl border bg-card p-8 shadow-sm text-center">
+      <div className="rounded-xl border bg-card p-8 shadow-sm text-center space-y-4">
         <h1 className="text-2xl font-semibold tracking-tight">Invalid link</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           This reset link is invalid or has expired.
         </p>
+        <Button asChild variant="outline" className="w-full">
+          <Link href="/forgot-password">Request a new link</Link>
+        </Button>
       </div>
     )
   }
 
   return (
     <div className="rounded-xl border bg-card p-8 shadow-sm">
-      <h1 className="text-2xl font-semibold tracking-tight">Reset password</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Choose a new password for your account
-      </p>
-      {/* TODO: ResetPasswordForm component (Session 2) */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold tracking-tight">Reset password</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Choose a new password for your account
+        </p>
+      </div>
+      <ResetPasswordForm token={token} />
     </div>
   )
 }

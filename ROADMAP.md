@@ -124,20 +124,25 @@
 
 ---
 
-## SESIÓN 2 — CREDENTIALS AUTH + EMAIL
+## SESIÓN 2 — CREDENTIALS AUTH + EMAIL ✅ COMPLETADA (2026-04-02)
 **Objetivo:** Register, login, verificación de email y reset de contraseña funcionando end-to-end
 
-- [ ] Server Action: `register` (hash bcrypt + crear User + enviar email de verificación)
-- [ ] Server Action: `login` (NextAuth signIn + rate limiting + check 2FA)
-- [ ] Server Action: `verifyEmail` (verificar token + marcar emailVerified)
-- [ ] Server Action: `forgotPassword` (crear PasswordReset token + enviar email)
-- [ ] Server Action: `resetPassword` (validar token + actualizar password)
-- [ ] UI: página de login completa con shadcn
-- [ ] UI: página de register completa con shadcn
-- [ ] UI: página de verify-email
-- [ ] UI: página de forgot-password
-- [ ] UI: página de reset-password
-- [ ] Templates de email con Resend (verificación + reset)
+- [x] Zod schemas para todos los formularios (`src/lib/validations/auth.ts`)
+- [x] Token utilities: generateVerificationToken, generatePasswordResetToken (`src/lib/tokens.ts`)
+- [x] Email functions con Resend: verification, reset, new-location alert (`src/lib/mail.ts`)
+- [x] Server Action: `register` (bcrypt hash + crear User + enviar email de verificación)
+- [x] Server Action: `login` (NextAuth signIn + check emailVerified + reenvío de verificación)
+- [x] Server Action: `logout`
+- [x] Server Action: `verifyEmail` (verificar token + marcar emailVerified)
+- [x] Server Action: `forgotPassword` (PasswordReset token + email, sin revelar si email existe)
+- [x] Server Action: `resetPassword` (validar token + hash bcrypt + marcar usedAt)
+- [x] UI: OAuthButtons (Google, GitHub, Discord) con loading state
+- [x] UI: LoginForm — react-hook-form + zod + shadcn
+- [x] UI: RegisterForm — react-hook-form + zod + shadcn
+- [x] UI: VerifyEmailForm — auto-verifica al cargar con el token del URL
+- [x] UI: ForgotPasswordForm — react-hook-form + zod + shadcn
+- [x] UI: ResetPasswordForm — react-hook-form + zod + shadcn
+- [x] Páginas actualizadas con componentes reales (login, register, verify-email, forgot-password, reset-password)
 
 ---
 
@@ -211,6 +216,7 @@
 | Fecha | Sesión | Completado |
 |---|---|---|
 | 2026-04-01 | 1 — Fundación | shadcn/ui, Prisma schema, NextAuth v5, proxy.ts, security headers, rutas, .env.example ✅ |
+| 2026-04-02 | 2 — Credentials auth + email | Zod schemas, tokens, Resend emails, Server Actions (register/login/verify/forgot/reset), UI completa ✅ |
 
 ---
 
