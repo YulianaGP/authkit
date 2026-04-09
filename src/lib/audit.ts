@@ -104,10 +104,10 @@ export async function createAuditLog({
         os,
         device,
         success,
-        metadata: metadata ?? undefined,
+        metadata: metadata ? JSON.parse(JSON.stringify(metadata)) : undefined,
       },
     })
-  } catch {
-    // Never let audit logging break the auth flow
+  } catch (err) {
+    console.error("[AuditLog] Failed to write:", err)
   }
 }

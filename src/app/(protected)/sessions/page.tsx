@@ -89,7 +89,7 @@ export default function SessionsPage() {
           disabled={isPending}
           className="w-full sm:w-auto"
         >
-          {isPending ? "Signing out…" : "Sign out all devices"}
+          {isPending ? "Signing out…" : "Sign out"}
         </Button>
       </div>
 

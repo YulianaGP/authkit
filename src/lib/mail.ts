@@ -1,7 +1,7 @@
 import { Resend } from "resend"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = process.env.RESEND_FROM_EMAIL ?? "AuthKit <noreply@yourdomain.com>"
+const FROM = process.env.RESEND_FROM_EMAIL ?? "AuthKit <onboarding@resend.dev>"
 
 export async function sendVerificationEmail(email: string, token: string) {
   const url = `${process.env.AUTH_URL}/verify-email?token=${token}`

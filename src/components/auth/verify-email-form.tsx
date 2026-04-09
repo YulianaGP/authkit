@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { verifyEmail } from "@/actions/auth"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 
 interface VerifyEmailFormProps {
   token: string
@@ -37,9 +37,9 @@ export function VerifyEmailForm({ token }: VerifyEmailFormProps) {
           <AlertDescription>{result.success}</AlertDescription>
         </Alert>
       )}
-      <Button asChild className="w-full">
-        <Link href="/login">Go to sign in</Link>
-      </Button>
+      <Link href="/login" className={buttonVariants({ className: "w-full justify-center" })}>
+        Go to sign in
+      </Link>
     </div>
   )
 }

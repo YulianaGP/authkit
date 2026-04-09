@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@/auth"
+import { auth, signOut } from "@/auth"
 import { db } from "@/lib/db"
 
 // ---------------------------------------------------------------------------
@@ -19,33 +19,14 @@ export async function getAuditLogs() {
 }
 
 // ---------------------------------------------------------------------------
-// Revoke a specific DB session
-// ---------------------------------------------------------------------------
-
-export async function revokeSession(sessionId: string) {
-  const session = await auth()
-  if (!session?.user?.id) return { error: "Not authenticated" }
-
-  // Ensure the session belongs to the current user
-  const target = await db.session.findUnique({ where: { id: sessionId } })
-  if (!target || target.userId !== session.user.id) {
-    return { error: "Session not found" }
-  }
-
-  await db.session.delete({ where: { id: sessionId } })
-  return { success: "Session revoked" }
-}
-
-// ---------------------------------------------------------------------------
-// Logout all devices — delete every session for the current user
+// Sign out current device (JWT strategy — no DB sessions to delete)
 // ---------------------------------------------------------------------------
 
 export async function logoutAllDevices() {
   const session = await auth()
   if (!session?.user?.id) return { error: "Not authenticated" }
 
-  await db.session.deleteMany({ where: { userId: session.user.id } })
-  return { success: "All sessions revoked" }
+  await signOut({ redirectTo: "/login" })
 }
 
 // ---------------------------------------------------------------------------
@@ -65,7 +46,7 @@ export async function getAllUsers() {
       emailVerified: true,
       twoFactorEnabled: true,
       createdAt: true,
-      _count: { select: { sessions: true, auditLogs: true } },
+      _count: { select: { auditLogs: true } },
     },
     orderBy: { createdAt: "desc" },
   })

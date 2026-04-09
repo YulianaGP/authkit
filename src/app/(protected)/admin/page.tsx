@@ -28,7 +28,6 @@ export default async function AdminPage() {
               <th className="text-left px-4 py-3 font-medium">User</th>
               <th className="text-left px-4 py-3 font-medium">Role</th>
               <th className="text-left px-4 py-3 font-medium">Status</th>
-              <th className="text-right px-4 py-3 font-medium">Sessions</th>
               <th className="text-right px-4 py-3 font-medium">Events</th>
             </tr>
           </thead>
@@ -36,8 +35,8 @@ export default async function AdminPage() {
             {users.map((user) => (
               <tr key={user.id} className="hover:bg-muted/50 transition-colors">
                 <td className="px-4 py-3">
-                  <p className="font-medium truncate max-w-[200px]">{user.name ?? "—"}</p>
-                  <p className="text-muted-foreground truncate max-w-[200px]">{user.email}</p>
+                  <p className="font-medium truncate max-w-50">{user.name ?? "—"}</p>
+                  <p className="text-muted-foreground truncate max-w-50">{user.email}</p>
                 </td>
                 <td className="px-4 py-3">
                   <Badge variant={user.role === "ADMIN" ? "default" : "secondary"}>
@@ -56,7 +55,6 @@ export default async function AdminPage() {
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-right">{user._count.sessions}</td>
                 <td className="px-4 py-3 text-right">{user._count.auditLogs}</td>
               </tr>
             ))}
@@ -86,7 +84,6 @@ export default async function AdminPage() {
               {user.twoFactorEnabled && <Badge variant="secondary">2FA</Badge>}
             </div>
             <div className="flex gap-4 text-xs text-muted-foreground">
-              <span>{user._count.sessions} session{user._count.sessions !== 1 ? "s" : ""}</span>
               <span>{user._count.auditLogs} event{user._count.auditLogs !== 1 ? "s" : ""}</span>
             </div>
           </li>

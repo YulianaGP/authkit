@@ -57,7 +57,69 @@ export async function register(data: RegisterInput): Promise<ActionResult> {
 // Login
 // ---------------------------------------------------------------------------
 
-export async function login(data: LoginInput): Promise<ActionResult> {
+// Used by useActionState — receives FormData from a native form action
+export async function loginFormAction(
+  _prevState: ActionResult | null,
+  formData: FormData
+): Promise<ActionResult | null> {
+  const email = formData.get("email") as string
+  const password = formData.get("password") as string
+
+  const parsed = LoginSchema.safeParse({ email, password })
+  if (!parsed.success) return { error: "Invalid fields" }
+
+  // Rate limit by IP — 5 attempts per 15 minutes
+  const headersList = await headers()
+  const ip =
+    headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
+    headersList.get("x-real-ip") ??
+    "anonymous"
+
+  const { success, reset } = await loginRatelimit.limit(ip)
+
+  if (!success) {
+    const retryAfterMinutes = Math.ceil((reset - Date.now()) / 1000 / 60)
+    return {
+      error: `Too many login attempts. Please try again in ${retryAfterMinutes} minute${retryAfterMinutes === 1 ? "" : "s"}.`,
+    }
+  }
+
+  const user = await db.user.findUnique({ where: { email: parsed.data.email } })
+
+  if (!user || !user.password) {
+    return { error: "Invalid email or password" }
+  }
+
+  if (!user.emailVerified) {
+    const verification = await generateVerificationToken(parsed.data.email)
+    await sendVerificationEmail(parsed.data.email, verification.token)
+    return { error: "Email not verified. A new verification link has been sent." }
+  }
+
+  const passwordMatch = await bcrypt.compare(parsed.data.password, user.password)
+  if (!passwordMatch) {
+    await createAuditLog({ userId: user.id, action: "LOGIN_FAILED", headers: headersList, success: false })
+    return { error: "Invalid email or password" }
+  }
+
+  if (user.twoFactorEnabled) {
+    redirect(`/two-factor?userId=${user.id}`)
+  }
+
+  await createAuditLog({ userId: user.id, action: "LOGIN", headers: headersList })
+
+  // signIn with redirectTo throws NEXT_REDIRECT — Next.js converts it to a
+  // proper HTTP redirect response that includes the Set-Cookie header
+  await signIn("credentials", {
+    email: parsed.data.email,
+    password: parsed.data.password,
+    redirectTo: "/dashboard",
+  })
+
+  return null
+}
+
+export async function login(data: LoginInput): Promise<ActionResult | undefined> {
   const parsed = LoginSchema.safeParse(data)
   if (!parsed.success) return { error: "Invalid fields" }
 
@@ -93,27 +155,17 @@ export async function login(data: LoginInput): Promise<ActionResult> {
 
   const passwordMatch = await bcrypt.compare(password, user.password)
   if (!passwordMatch) {
+    await createAuditLog({ userId: user.id, action: "LOGIN_FAILED", headers: headersList, success: false })
     return { error: "Invalid email or password" }
   }
 
-  // If 2FA is enabled, redirect to the verification step before signing in
   if (user.twoFactorEnabled) {
     redirect(`/two-factor?userId=${user.id}`)
   }
 
-  try {
-    await signIn("credentials", { email, password, redirect: false })
-  } catch (error) {
-    if (error instanceof AuthError) {
-      await createAuditLog({ userId: user.id, action: "LOGIN_FAILED", headers: headersList, success: false })
-      return { error: "Invalid email or password" }
-    }
-    throw error
-  }
-
   await createAuditLog({ userId: user.id, action: "LOGIN", headers: headersList })
 
-  redirect("/dashboard")
+  await signIn("credentials", { email, password, redirectTo: "/dashboard" })
 }
 
 // ---------------------------------------------------------------------------

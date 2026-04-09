@@ -5,13 +5,15 @@ import GitHub from "next-auth/providers/github"
 import Discord from "next-auth/providers/discord"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
+import { headers } from "next/headers"
 import { db } from "@/lib/db"
+import { createAuditLog } from "@/lib/audit"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
 
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
 
   pages: {
@@ -60,14 +62,39 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
 
   callbacks: {
-    async session({ session, user }) {
-      if (user && session.user) {
-        session.user.id = user.id
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
         const dbUser = user as unknown as { role: string; twoFactorEnabled: boolean }
-        session.user.role = dbUser.role as import("@prisma/client").Role
-        session.user.twoFactorEnabled = dbUser.twoFactorEnabled ?? false
+        token.role = dbUser.role
+        token.twoFactorEnabled = dbUser.twoFactorEnabled ?? false
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string
+        session.user.role = token.role as import("@prisma/client").Role
+        session.user.twoFactorEnabled = (token.twoFactorEnabled as boolean) ?? false
       }
       return session
+    },
+  },
+
+  events: {
+    async signIn({ user, account }) {
+      // Only log OAuth logins here — credentials login is logged in the action
+      if (!user.id || account?.type === "credentials") return
+      try {
+        const headersList = await headers()
+        await createAuditLog({
+          userId: user.id,
+          action: "LOGIN",
+          headers: headersList,
+        })
+      } catch {
+        // Never let audit logging break the auth flow
+      }
     },
   },
 })
