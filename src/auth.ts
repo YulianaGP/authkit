@@ -73,7 +73,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id as string
+        session.user.id = (token.id ?? token.sub) as string
         session.user.role = token.role as import("@prisma/client").Role
         session.user.twoFactorEnabled = (token.twoFactorEnabled as boolean) ?? false
       }

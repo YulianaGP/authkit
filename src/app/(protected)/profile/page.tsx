@@ -57,7 +57,7 @@ export default async function ProfilePage() {
         <p className="text-sm text-muted-foreground">
           Protect your account with an authenticator app
         </p>
-        <TwoFactorSection />
+        <TwoFactorSection enabled={session?.user?.twoFactorEnabled ?? false} />
       </div>
     </div>
   )

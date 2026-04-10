@@ -1,18 +1,19 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
+import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
 import { UpdateProfileSchema, type UpdateProfileInput } from "@/lib/validations/auth"
 import { updateProfile } from "@/actions/profile"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 
 export function UpdateProfileForm({ currentName }: { currentName: string }) {
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const [result, setResult] = useState<{ error?: string; success?: string } | null>(null)
 
   const form = useForm<UpdateProfileInput>({
     resolver: zodResolver(UpdateProfileSchema),
@@ -20,10 +21,14 @@ export function UpdateProfileForm({ currentName }: { currentName: string }) {
   })
 
   const onSubmit = (data: UpdateProfileInput) => {
-    setResult(null)
     startTransition(async () => {
       const res = await updateProfile(data)
-      setResult(res)
+      if ("error" in res) {
+        toast.error(res.error)
+      } else {
+        toast.success(res.success)
+        router.refresh()
+      }
     })
   }
 
@@ -43,16 +48,6 @@ export function UpdateProfileForm({ currentName }: { currentName: string }) {
             </FormItem>
           )}
         />
-        {result?.error && (
-          <Alert variant="destructive">
-            <AlertDescription>{result.error}</AlertDescription>
-          </Alert>
-        )}
-        {result?.success && (
-          <Alert>
-            <AlertDescription>{result.success}</AlertDescription>
-          </Alert>
-        )}
         <Button type="submit" disabled={isPending}>
           {isPending ? "Saving…" : "Save"}
         </Button>

@@ -192,23 +192,53 @@
 
 ---
 
-## SESIÓN 6 — RBAC + PERFIL
+## SESIÓN 6 — RBAC + PERFIL ✅ COMPLETADA (2026-04-09)
 **Objetivo:** Sistema de roles completo + página de perfil
 
-- [ ] `proxy.ts` con lógica de roles (redirigir si rol insuficiente)
-- [ ] Helper `hasRole(session, role)` reutilizable
-- [ ] UI: página de perfil (nombre, email, avatar, cambiar password)
-- [ ] Server Action: `updateProfile`
-- [ ] Server Action: `updateAvatar`
-- [ ] UI: badge de rol visible en dashboard
-- [ ] UI: página de admin solo accesible para ADMIN
+- [x] `proxy.ts` con lógica de roles (redirigir si rol insuficiente)
+- [x] Helper `hasRole(session, role)` reutilizable (`src/lib/roles.ts`)
+- [x] UI: página de perfil (nombre, email, cambiar password, 2FA toggle)
+- [x] Server Action: `updateProfile`
+- [x] Server Action: `updatePassword`
+- [x] UI: badge de rol visible en dashboard
+- [x] UI: página de admin solo accesible para ADMIN
+- [x] Navbar con links según rol
+- [x] TwoFactorSection: setup + disable flow desde perfil
 
 ---
 
-## SESIÓN 7 — POLISH PARA VENTA
+## SESIÓN 7 — CALIDAD (Nivel 1)
+**Objetivo:** Detalles que dan percepción de calidad premium
+
+- [ ] Toast notifications (sonner) — reemplazar Alert inline en formularios
+- [ ] Loading skeletons en dashboard y admin panel
+- [ ] Dark mode toggle en navbar
+- [ ] Páginas de error personalizadas (`not-found.tsx`, `error.tsx`)
+
+---
+
+## SESIÓN 8 — FEATURES PREMIUM (Nivel 2)
+**Objetivo:** Features que justifican precio $69-99
+
+- [ ] Exportar audit log como CSV (admin)
+- [ ] Impersonation — admin puede ver la app como cualquier usuario
+- [ ] Página de onboarding post-registro (wizard de bienvenida)
+- [ ] Banner de aviso "New login from new location" (email alert)
+
+---
+
+## SESIÓN 9 — DIFERENCIADOR ÚNICO (Nivel 3)
+**Objetivo:** Lo que ningún otro template tiene
+
+- [ ] Página `/docs` interactiva dentro de la app
+- [ ] Video demo de 2 minutos embebido en README
+
+---
+
+## SESIÓN 10 — POLISH PARA VENTA
 **Objetivo:** Template listo para publicar en Gumroad/Lemonsqueezy
 
-- [ ] README completo en inglés con demo GIF
+- [ ] README completo en inglés con screenshots
 - [ ] `.env.example` con todos los campos documentados
 - [ ] `SETUP.md` — guía paso a paso desde cero
 - [ ] `LICENSE` — MIT

@@ -1,14 +1,23 @@
 import Link from "next/link"
 import { auth } from "@/auth"
+import { db } from "@/lib/db"
 import { logout } from "@/actions/auth"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export async function Navbar() {
   const session = await auth()
-  if (!session?.user) return null
+  if (!session?.user?.id) return null
 
-  const isAdmin = session.user.role === "ADMIN"
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { name: true, email: true, role: true },
+  })
+  if (!user) return null
+
+  const isAdmin = user.role === "ADMIN"
+  const displayName = user.name ?? user.email
 
   return (
     <header className="border-b bg-background">
@@ -37,15 +46,16 @@ export async function Navbar() {
         </div>
 
         {/* Right — user info + sign out */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="hidden sm:flex items-center gap-2">
             <span className="text-sm text-muted-foreground truncate max-w-40">
-              {session.user.name ?? session.user.email}
+              {displayName}
             </span>
             {isAdmin && (
               <Badge variant="default" className="text-xs">Admin</Badge>
             )}
           </div>
+          <ThemeToggle />
           <form action={logout}>
             <Button type="submit" variant="outline" size="sm">
               Sign out
