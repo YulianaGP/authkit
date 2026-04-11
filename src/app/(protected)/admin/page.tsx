@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { getAllUsers } from "@/actions/sessions"
 import { Badge } from "@/components/ui/badge"
+import { ExportCsvButton } from "@/components/admin/export-csv-button"
 
 export const metadata = { title: "Admin — AuthKit" }
 
@@ -13,11 +14,14 @@ export default async function AdminPage() {
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-8 space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Admin panel</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {users.length} user{users.length !== 1 ? "s" : ""} registered
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Admin panel</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {users.length} user{users.length !== 1 ? "s" : ""} registered
+          </p>
+        </div>
+        <ExportCsvButton />
       </div>
 
       {/* Mobile: card list / Desktop: table */}

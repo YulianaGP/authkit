@@ -1,6 +1,7 @@
 import { UAParser } from "ua-parser-js"
 import type { IncomingHttpHeaders } from "http"
 import { db } from "@/lib/db"
+import { sendNewLocationAlert } from "@/lib/mail"
 import type { AuditAction } from "@prisma/client"
 
 // ---------------------------------------------------------------------------
@@ -107,6 +108,26 @@ export async function createAuditLog({
         metadata: metadata ? JSON.parse(JSON.stringify(metadata)) : undefined,
       },
     })
+
+    // New location alert — only on successful LOGIN from a different country
+    if (action === "LOGIN" && success && country) {
+      try {
+        const lastLogin = await db.auditLog.findFirst({
+          where: { userId, action: "LOGIN", success: true, country: { not: null } },
+          orderBy: { createdAt: "desc" },
+          skip: 1, // skip the one we just created
+        })
+
+        if (lastLogin?.country && lastLogin.country !== country) {
+          const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
+          if (user?.email) {
+            await sendNewLocationAlert(user.email, { city, country, browser, device })
+          }
+        }
+      } catch {
+        // Never let alert break the auth flow
+      }
+    }
   } catch (err) {
     console.error("[AuditLog] Failed to write:", err)
   }

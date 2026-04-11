@@ -52,6 +52,9 @@ model User {
   password          String?   // null for OAuth-only users
   role              Role      @default(USER)
 
+  // Onboarding
+  onboardingDone    Boolean   @default(false)
+
   // 2FA
   twoFactorEnabled  Boolean   @default(false)
   twoFactorSecret   String?   // encrypted TOTP secret

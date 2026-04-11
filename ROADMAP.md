@@ -220,10 +220,27 @@
 ## SESIÓN 8 — FEATURES PREMIUM (Nivel 2)
 **Objetivo:** Features que justifican precio $69-99
 
-- [ ] Exportar audit log como CSV (admin)
-- [ ] Impersonation — admin puede ver la app como cualquier usuario
-- [ ] Página de onboarding post-registro (wizard de bienvenida)
-- [ ] Banner de aviso "New login from new location" (email alert)
+### 8A — Export CSV (admin)
+- [ ] Server Action `exportAuditLogCSV` — genera CSV con todos los audit logs
+- [ ] Botón "Export CSV" en admin panel
+- [ ] Descarga directa en el browser sin página nueva
+
+### 8B — Email de nueva ubicación
+- [ ] Comparar país/ciudad del login actual vs último login del usuario en audit_logs
+- [ ] Si es diferente → enviar `sendNewLocationAlert` (ya existe en mail.ts)
+- [ ] Integrar en `loginFormAction` y en `events.signIn` (OAuth)
+
+### 8C — Onboarding post-registro
+- [ ] Página `/onboarding` con wizard de 3 pasos: nombre → plan → listo
+- [ ] Redirigir a `/onboarding` después del primer login (campo `onboardingDone` en User)
+- [ ] Agregar campo `onboardingDone Boolean @default(false)` al schema de Prisma
+- [ ] proxy.ts redirige a /onboarding si no está completado
+
+### 8D — Impersonation (admin)
+- [ ] Server Action `impersonateUser` — admin inicia sesión como otro user
+- [ ] Banner visible "You are impersonating X — Exit" en navbar
+- [ ] Server Action `stopImpersonation` — restaura sesión de admin
+- [ ] Solo accesible para ADMIN, loggeado en audit_logs
 
 ---
 
