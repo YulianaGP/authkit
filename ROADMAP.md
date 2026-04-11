@@ -239,19 +239,29 @@
 - [x] proxy.ts redirige a /onboarding si no está completado
 - [x] `prisma/seed.ts` — crea usuario ADMIN inicial desde variables de entorno
 
-### 8D — Impersonation (admin) ← ESTAMOS AQUÍ
-- [ ] Botón "Impersonate" por usuario en admin panel
-- [ ] Cookie `impersonating` guarda el ID del admin original
-- [ ] Sesión activa cambia al usuario target
-- [ ] Banner rojo en navbar: "Impersonating [nombre] — Exit"
-- [ ] Botón "Exit" restaura sesión del admin
-- [ ] Acción loggeada en audit_logs como IMPERSONATE_START / IMPERSONATE_END
+### 8D — Impersonation (admin) ✅ COMPLETADA (2026-04-11)
+- [x] Botón "Impersonate" por usuario en admin panel (`ImpersonateButton`)
+- [x] Cookie `authkit_impersonate_as` (httpOnly) guarda el ID del usuario target
+- [x] Cookie `authkit_impersonate_name` (readable) guarda el nombre para el banner
+- [x] Sesión activa cambia al usuario target vía session callback en `auth.ts`
+- [x] Banner rojo en layout: "Impersonating [nombre] — Exit"
+- [x] Botón "Exit impersonation" restaura sesión del admin
+- [x] Solo accesible para ADMIN
 
-### 8D — Impersonation (admin)
-- [ ] Server Action `impersonateUser` — admin inicia sesión como otro user
-- [ ] Banner visible "You are impersonating X — Exit" en navbar
-- [ ] Server Action `stopImpersonation` — restaura sesión de admin
-- [ ] Solo accesible para ADMIN, loggeado en audit_logs
+---
+
+## SESIÓN UI — REDISEÑO VISUAL ✅ COMPLETADA (2026-04-11)
+**Objetivo:** SaaS design moderno con shadcn/ui + Tailwind — sin romper lógica
+
+- [x] Sistema de colores: primario indigo/violeta (OKLch), reemplaza neutros
+- [x] Fuente: Plus Jakarta Sans (reemplaza Geist)
+- [x] Dark mode toggle: segmented control Auto / Light / Dark
+- [x] Landing page (`/`) propia de AuthKit con hero + feature grid
+- [x] Auth layout con brand mark encima del card
+- [x] Navbar: sticky + backdrop-blur + logo mark + nav pills
+- [x] Todos los cards: `rounded-2xl`, espaciado consistente
+- [x] Dashboard: greeting con primer nombre + stat cards con hover
+- [x] Profile: sección headers uppercase + compact info rows
 
 ---
 
@@ -284,6 +294,10 @@
 | 2026-04-07 | 3 — OAuth + rate limiting | Google/GitHub/Discord OAuth, rate limiting 5 intentos/15min con Upstash ✅ |
 | 2026-04-07 | 4 — 2FA TOTP | TOTP setup+verify, 8 recovery codes hasheados, interceptor en login, UI completa ✅ |
 | 2026-04-07 | 5 — AuditLog + admin panel | ua-parser-js, geo Vercel+ip-api, sessions page, admin panel responsive ✅ |
+| 2026-04-09 | 6 — RBAC + perfil | proxy.ts con roles, profile page, updateProfile, updatePassword, TwoFactorSection ✅ |
+| 2026-04-10 | 7 — Calidad (nivel 1) | Sonner toasts, skeletons, dark mode, error pages, navbar desde DB ✅ |
+| 2026-04-10 | 8A-8D — Features premium | CSV export, new-location email, onboarding wizard, impersonation admin ✅ |
+| 2026-04-11 | UI — Rediseño visual | Plus Jakarta Sans, indigo palette, landing page, segmented theme toggle ✅ |
 
 ---
 

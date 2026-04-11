@@ -26,7 +26,7 @@ export default async function AdminPage() {
       </div>
 
       {/* Mobile: card list / Desktop: table */}
-      <div className="hidden sm:block rounded-xl border overflow-hidden">
+      <div className="hidden sm:block rounded-2xl border overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-muted text-muted-foreground">
             <tr>
@@ -74,7 +74,7 @@ export default async function AdminPage() {
       {/* Mobile card list */}
       <ul className="sm:hidden space-y-3">
         {users.map((user) => (
-          <li key={user.id} className="rounded-xl border p-4 space-y-2">
+          <li key={user.id} className="rounded-2xl border p-4 space-y-2">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <p className="font-medium truncate">{user.name ?? "—"}</p>

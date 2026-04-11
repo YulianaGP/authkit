@@ -5,7 +5,7 @@ export default function AdminLoading() {
         <div className="h-8 w-36 rounded-lg bg-muted" />
         <div className="h-4 w-28 rounded-lg bg-muted" />
       </div>
-      <div className="hidden sm:block rounded-xl border overflow-hidden">
+      <div className="hidden sm:block rounded-2xl border overflow-hidden">
         <div className="h-12 bg-muted" />
         {[...Array(5)].map((_, i) => (
           <div key={i} className="border-t px-4 py-3 flex gap-4">

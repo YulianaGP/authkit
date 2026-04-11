@@ -8,7 +8,7 @@ export default async function VerifyEmailPage(props: {
   const { token } = await props.searchParams
 
   return (
-    <div className="rounded-xl border bg-card p-8 shadow-sm text-center">
+    <div className="rounded-2xl border bg-card p-8 shadow-sm text-center">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight">Verify your email</h1>
         <p className="mt-1 text-sm text-muted-foreground">

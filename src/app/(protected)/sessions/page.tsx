@@ -68,7 +68,7 @@ export default function SessionsPage() {
   const handleLogoutAll = () => {
     startTransition(async () => {
       const res = await logoutAllDevices()
-      setResult(res)
+      setResult(res ?? null)
     })
   }
 
@@ -108,7 +108,7 @@ export default function SessionsPage() {
       {loading ? (
         <div className="space-y-3">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="rounded-xl border p-4 animate-pulse bg-muted h-16" />
+            <div key={i} className="rounded-2xl border p-4 animate-pulse bg-muted h-16" />
           ))}
         </div>
       ) : logs.length === 0 ? (
@@ -118,7 +118,7 @@ export default function SessionsPage() {
       ) : (
         <ul className="space-y-3">
           {logs.map((log) => (
-            <li key={log.id} className="rounded-xl border p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <li key={log.id} className="rounded-2xl border p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-3">
                 <span className="text-xl mt-0.5">
                   <DeviceIcon device={log.device} />
