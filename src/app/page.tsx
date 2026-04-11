@@ -10,6 +10,12 @@ export default function Home() {
         </span>
         <div className="flex items-center gap-3">
           <Link
+            href="/docs"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Docs
+          </Link>
+          <Link
             href="/login"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -53,6 +59,12 @@ export default function Home() {
             className="font-medium border hover:bg-muted transition-colors px-6 py-2.5 rounded-lg text-sm"
           >
             Sign in
+          </Link>
+          <Link
+            href="/docs"
+            className="font-medium text-muted-foreground hover:text-foreground transition-colors text-sm"
+          >
+            Docs
           </Link>
         </div>
 
