@@ -1,9 +1,14 @@
 import { Resend } from "resend"
 
+// Demo mode: if no API key is configured, email sending is silently skipped.
+// Registration auto-verifies accounts so the full flow still works in demos.
+export const isDemoMode = !process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "demo"
+
 const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = process.env.RESEND_FROM_EMAIL ?? "AuthKit <onboarding@resend.dev>"
 
 export async function sendVerificationEmail(email: string, token: string) {
+  if (isDemoMode) return
   const url = `${process.env.AUTH_URL}/verify-email?token=${token}`
 
   await resend.emails.send({
@@ -30,6 +35,7 @@ export async function sendVerificationEmail(email: string, token: string) {
 }
 
 export async function sendPasswordResetEmail(email: string, token: string) {
+  if (isDemoMode) return
   const url = `${process.env.AUTH_URL}/reset-password?token=${token}`
 
   await resend.emails.send({
@@ -59,6 +65,7 @@ export async function sendNewLocationAlert(
   email: string,
   details: { city?: string; country?: string; browser?: string; device?: string }
 ) {
+  if (isDemoMode) return
   await resend.emails.send({
     from: FROM,
     to: email,

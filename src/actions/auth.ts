@@ -14,7 +14,7 @@ import {
   getVerificationToken,
   getPasswordResetToken,
 } from "@/lib/tokens"
-import { sendVerificationEmail, sendPasswordResetEmail } from "@/lib/mail"
+import { sendVerificationEmail, sendPasswordResetEmail, isDemoMode } from "@/lib/mail"
 import {
   RegisterSchema,
   LoginSchema,
@@ -42,6 +42,13 @@ export async function register(data: RegisterInput): Promise<ActionResult> {
   if (existing) return { error: "An account with this email already exists" }
 
   const hashedPassword = await bcrypt.hash(password, 12)
+
+  if (isDemoMode) {
+    await db.user.create({
+      data: { name, email, password: hashedPassword, emailVerified: new Date() },
+    })
+    return { success: "Account created! You can sign in now." }
+  }
 
   await db.user.create({
     data: { name, email, password: hashedPassword },
@@ -209,6 +216,8 @@ export async function verifyEmail(token: string): Promise<ActionResult> {
 // ---------------------------------------------------------------------------
 
 export async function forgotPassword(data: ForgotPasswordInput): Promise<ActionResult> {
+  if (isDemoMode) return { error: "Password reset emails are disabled in demo mode. Use OAuth to sign in." }
+
   const parsed = ForgotPasswordSchema.safeParse(data)
   if (!parsed.success) return { error: "Invalid email address" }
 
