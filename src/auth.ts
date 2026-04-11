@@ -5,7 +5,7 @@ import GitHub from "next-auth/providers/github"
 import Discord from "next-auth/providers/discord"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
-import { headers } from "next/headers"
+import { headers, cookies } from "next/headers"
 import { db } from "@/lib/db"
 import { createAuditLog } from "@/lib/audit"
 
@@ -72,11 +72,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = (token.id ?? token.sub) as string
-        session.user.role = token.role as import("@prisma/client").Role
-        session.user.twoFactorEnabled = (token.twoFactorEnabled as boolean) ?? false
+      if (!token || !session.user) return session
+
+      // Impersonation — admin sees the app as another user
+      const cookieStore = await cookies()
+      const impersonateAs = cookieStore.get("authkit_impersonate_as")?.value
+
+      if (impersonateAs && token.role === "ADMIN") {
+        const target = await db.user.findUnique({
+          where: { id: impersonateAs },
+          select: { id: true, name: true, email: true, role: true, twoFactorEnabled: true },
+        })
+        if (target) {
+          session.user.id = target.id
+          session.user.name = target.name
+          session.user.email = target.email!
+          session.user.role = target.role
+          session.user.twoFactorEnabled = target.twoFactorEnabled
+          return session
+        }
       }
+
+      session.user.id = (token.id ?? token.sub) as string
+      session.user.role = token.role as import("@prisma/client").Role
+      session.user.twoFactorEnabled = (token.twoFactorEnabled as boolean) ?? false
       return session
     },
   },

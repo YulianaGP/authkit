@@ -207,34 +207,45 @@
 
 ---
 
-## SESIÓN 7 — CALIDAD (Nivel 1)
+## SESIÓN 7 — CALIDAD (Nivel 1) ✅ COMPLETADA (2026-04-10)
 **Objetivo:** Detalles que dan percepción de calidad premium
 
-- [ ] Toast notifications (sonner) — reemplazar Alert inline en formularios
-- [ ] Loading skeletons en dashboard y admin panel
-- [ ] Dark mode toggle en navbar
-- [ ] Páginas de error personalizadas (`not-found.tsx`, `error.tsx`)
+- [x] Toast notifications (sonner) — reemplazar Alert inline en formularios
+- [x] Loading skeletons en dashboard y admin panel
+- [x] Dark mode toggle en navbar
+- [x] Páginas de error personalizadas (`not-found.tsx`, `error.tsx`)
+- [x] Navbar lee nombre desde DB (no JWT) — siempre actualizado
+- [x] router.refresh() en update-profile-form para reflejar cambios al instante
 
 ---
 
 ## SESIÓN 8 — FEATURES PREMIUM (Nivel 2)
 **Objetivo:** Features que justifican precio $69-99
 
-### 8A — Export CSV (admin)
-- [ ] Server Action `exportAuditLogCSV` — genera CSV con todos los audit logs
-- [ ] Botón "Export CSV" en admin panel
-- [ ] Descarga directa en el browser sin página nueva
+### 8A — Export CSV (admin) ✅ COMPLETADA (2026-04-10)
+- [x] Route Handler `/api/admin/export-audit-log` — genera CSV con todos los audit logs
+- [x] Botón "Export CSV" en admin panel
+- [x] Descarga directa en el browser
 
-### 8B — Email de nueva ubicación
-- [ ] Comparar país/ciudad del login actual vs último login del usuario en audit_logs
-- [ ] Si es diferente → enviar `sendNewLocationAlert` (ya existe en mail.ts)
-- [ ] Integrar en `loginFormAction` y en `events.signIn` (OAuth)
+### 8B — Email de nueva ubicación ✅ COMPLETADA (2026-04-10)
+- [x] Comparar país del login actual vs último login en audit_logs
+- [x] Si es diferente → enviar `sendNewLocationAlert`
+- [x] Integrado en `createAuditLog` — aplica a credentials y OAuth automáticamente
 
-### 8C — Onboarding post-registro
-- [ ] Página `/onboarding` con wizard de 3 pasos: nombre → plan → listo
-- [ ] Redirigir a `/onboarding` después del primer login (campo `onboardingDone` en User)
-- [ ] Agregar campo `onboardingDone Boolean @default(false)` al schema de Prisma
-- [ ] proxy.ts redirige a /onboarding si no está completado
+### 8C — Onboarding post-registro ✅ COMPLETADA (2026-04-11)
+- [x] Página `/onboarding` con wizard de 2 pasos: bienvenida → nombre
+- [x] Redirigir a `/onboarding` después del primer login
+- [x] Campo `onboardingDone Boolean @default(false)` en schema de Prisma
+- [x] proxy.ts redirige a /onboarding si no está completado
+- [x] `prisma/seed.ts` — crea usuario ADMIN inicial desde variables de entorno
+
+### 8D — Impersonation (admin) ← ESTAMOS AQUÍ
+- [ ] Botón "Impersonate" por usuario en admin panel
+- [ ] Cookie `impersonating` guarda el ID del admin original
+- [ ] Sesión activa cambia al usuario target
+- [ ] Banner rojo en navbar: "Impersonating [nombre] — Exit"
+- [ ] Botón "Exit" restaura sesión del admin
+- [ ] Acción loggeada en audit_logs como IMPERSONATE_START / IMPERSONATE_END
 
 ### 8D — Impersonation (admin)
 - [ ] Server Action `impersonateUser` — admin inicia sesión como otro user

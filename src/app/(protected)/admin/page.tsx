@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { getAllUsers } from "@/actions/sessions"
 import { Badge } from "@/components/ui/badge"
 import { ExportCsvButton } from "@/components/admin/export-csv-button"
+import { ImpersonateButton } from "@/components/admin/impersonate-button"
 
 export const metadata = { title: "Admin — AuthKit" }
 
@@ -33,6 +34,7 @@ export default async function AdminPage() {
               <th className="text-left px-4 py-3 font-medium">Role</th>
               <th className="text-left px-4 py-3 font-medium">Status</th>
               <th className="text-right px-4 py-3 font-medium">Events</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -60,6 +62,9 @@ export default async function AdminPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-right">{user._count.auditLogs}</td>
+                <td className="px-4 py-3 text-right">
+                  <ImpersonateButton userId={user.id} />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -87,8 +92,9 @@ export default async function AdminPage() {
               )}
               {user.twoFactorEnabled && <Badge variant="secondary">2FA</Badge>}
             </div>
-            <div className="flex gap-4 text-xs text-muted-foreground">
-              <span>{user._count.auditLogs} event{user._count.auditLogs !== 1 ? "s" : ""}</span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">{user._count.auditLogs} event{user._count.auditLogs !== 1 ? "s" : ""}</span>
+              <ImpersonateButton userId={user.id} />
             </div>
           </li>
         ))}
