@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { ResetPasswordForm } from "@/components/auth/reset-password-form"
-import { Button } from "@/components/ui/button"
 
 export const metadata = { title: "Reset password — AuthKit" }
 
@@ -16,9 +15,12 @@ export default async function ResetPasswordPage(props: {
         <p className="text-sm text-muted-foreground">
           This reset link is invalid or has expired.
         </p>
-        <Button asChild variant="outline" className="w-full">
-          <Link href="/forgot-password">Request a new link</Link>
-        </Button>
+        <Link
+          href="/forgot-password"
+          className="inline-flex w-full items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+        >
+          Request a new link
+        </Link>
       </div>
     )
   }

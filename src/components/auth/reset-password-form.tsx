@@ -45,9 +45,12 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <Alert>
           <AlertDescription>{result.success}</AlertDescription>
         </Alert>
-        <Button asChild className="w-full">
-          <Link href="/login">Go to sign in</Link>
-        </Button>
+        <Link
+          href="/login"
+          className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          Go to sign in
+        </Link>
       </div>
     )
   }
