@@ -59,6 +59,10 @@ model User {
   twoFactorEnabled  Boolean   @default(false)
   twoFactorSecret   String?   // encrypted TOTP secret
 
+  // Account lockout
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

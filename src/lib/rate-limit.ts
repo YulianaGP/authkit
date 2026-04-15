@@ -8,3 +8,11 @@ export const loginRatelimit = new Ratelimit({
   prefix: "authkit:login",
   analytics: true,
 })
+
+// 3 password reset requests per hour per IP
+export const passwordResetRatelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(3, "1 h"),
+  prefix: "authkit:password-reset",
+  analytics: true,
+})

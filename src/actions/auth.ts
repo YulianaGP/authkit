@@ -6,7 +6,7 @@ import { headers, cookies } from "next/headers"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
 import { signIn, signOut } from "@/auth"
-import { loginRatelimit } from "@/lib/rate-limit"
+import { loginRatelimit, passwordResetRatelimit } from "@/lib/rate-limit"
 import { createAuditLog } from "@/lib/audit"
 import {
   generateVerificationToken,
@@ -97,6 +97,12 @@ export async function loginFormAction(
     return { error: "Invalid email or password" }
   }
 
+  // Check account lockout
+  if (user.lockedUntil && user.lockedUntil > new Date()) {
+    const minutes = Math.ceil((user.lockedUntil.getTime() - Date.now()) / 1000 / 60)
+    return { error: `Account locked. Try again in ${minutes} minute${minutes === 1 ? "" : "s"}.` }
+  }
+
   if (!user.emailVerified) {
     const verification = await generateVerificationToken(parsed.data.email)
     await sendVerificationEmail(parsed.data.email, verification.token)
@@ -105,8 +111,26 @@ export async function loginFormAction(
 
   const passwordMatch = await bcrypt.compare(parsed.data.password, user.password)
   if (!passwordMatch) {
+    const attempts = user.failedLoginAttempts + 1
+    const lockout = attempts >= 10
+    await db.user.update({
+      where: { id: user.id },
+      data: {
+        failedLoginAttempts: attempts,
+        lockedUntil: lockout ? new Date(Date.now() + 30 * 60 * 1000) : undefined,
+      },
+    })
     await createAuditLog({ userId: user.id, action: "LOGIN_FAILED", headers: headersList, success: false })
+    if (lockout) return { error: "Too many failed attempts. Account locked for 30 minutes." }
     return { error: "Invalid email or password" }
+  }
+
+  // Reset lockout counters on successful login
+  if (user.failedLoginAttempts > 0) {
+    await db.user.update({
+      where: { id: user.id },
+      data: { failedLoginAttempts: 0, lockedUntil: null },
+    })
   }
 
   if (user.twoFactorEnabled) {
@@ -164,6 +188,12 @@ export async function login(data: LoginInput): Promise<ActionResult | undefined>
     return { error: "Invalid email or password" }
   }
 
+  // Check account lockout
+  if (user.lockedUntil && user.lockedUntil > new Date()) {
+    const minutes = Math.ceil((user.lockedUntil.getTime() - Date.now()) / 1000 / 60)
+    return { error: `Account locked. Try again in ${minutes} minute${minutes === 1 ? "" : "s"}.` }
+  }
+
   if (!user.emailVerified) {
     const verification = await generateVerificationToken(email)
     await sendVerificationEmail(email, verification.token)
@@ -172,8 +202,26 @@ export async function login(data: LoginInput): Promise<ActionResult | undefined>
 
   const passwordMatch = await bcrypt.compare(password, user.password)
   if (!passwordMatch) {
+    const attempts = user.failedLoginAttempts + 1
+    const lockout = attempts >= 10
+    await db.user.update({
+      where: { id: user.id },
+      data: {
+        failedLoginAttempts: attempts,
+        lockedUntil: lockout ? new Date(Date.now() + 30 * 60 * 1000) : undefined,
+      },
+    })
     await createAuditLog({ userId: user.id, action: "LOGIN_FAILED", headers: headersList, success: false })
+    if (lockout) return { error: "Too many failed attempts. Account locked for 30 minutes." }
     return { error: "Invalid email or password" }
+  }
+
+  // Reset lockout counters on successful login
+  if (user.failedLoginAttempts > 0) {
+    await db.user.update({
+      where: { id: user.id },
+      data: { failedLoginAttempts: 0, lockedUntil: null },
+    })
   }
 
   if (user.twoFactorEnabled) {
@@ -232,6 +280,16 @@ export async function forgotPassword(data: ForgotPasswordInput): Promise<ActionR
   if (!parsed.success) return { error: "Invalid email address" }
 
   const { email } = parsed.data
+
+  // Rate limit by IP — 3 requests per hour
+  const headersList = await headers()
+  const ip =
+    headersList.get("x-forwarded-for")?.split(",")[0].trim() ??
+    headersList.get("x-real-ip") ??
+    "anonymous"
+
+  const { success } = await passwordResetRatelimit.limit(ip)
+  if (!success) return { error: "Too many requests. Please wait before requesting another reset link." }
 
   const user = await db.user.findUnique({ where: { email } })
 
