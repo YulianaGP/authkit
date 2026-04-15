@@ -1,6 +1,7 @@
 "use server"
 
-import { auth } from "@/auth"
+import { auth, signIn } from "@/auth"
+import { cookies } from "next/headers"
 import { db } from "@/lib/db"
 import {
   generateTOTPSecret,
@@ -135,3 +136,33 @@ export async function verifyTwoFactor(
 
   return { success: "ok" }
 }
+
+// ---------------------------------------------------------------------------
+// Complete login after 2FA — reads credentials from temp cookies, calls signIn
+// ---------------------------------------------------------------------------
+
+export async function completeTwoFactorLogin(
+  userId: string,
+  code: string,
+  callbackUrl: string = "/dashboard"
+): Promise<ActionResult> {
+  // 1. Verify the 2FA code
+  const result = await verifyTwoFactor(userId, code)
+  if ("error" in result) return result
+
+  // 2. Read credentials stored during the initial login attempt
+  const cookieStore = await cookies()
+  const email = cookieStore.get("authkit_2fa_email")?.value
+  const password = cookieStore.get("authkit_2fa_password")?.value
+  if (!email || !password) return { error: "Session expired. Please sign in again." }
+
+  // 3. Clear the temporary cookies
+  cookieStore.delete("authkit_2fa_email")
+  cookieStore.delete("authkit_2fa_password")
+
+  // 4. Complete the NextAuth sign-in — throws NEXT_REDIRECT on success
+  await signIn("credentials", { email, password, redirectTo: callbackUrl })
+
+  return { success: "ok" }
+}
+

@@ -2,7 +2,7 @@
 
 import { AuthError } from "next-auth"
 import { redirect } from "next/navigation"
-import { headers } from "next/headers"
+import { headers, cookies } from "next/headers"
 import bcrypt from "bcryptjs"
 import { db } from "@/lib/db"
 import { signIn, signOut } from "@/auth"
@@ -110,6 +110,16 @@ export async function loginFormAction(
   }
 
   if (user.twoFactorEnabled) {
+    const cookieStore = await cookies()
+    const opts = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax" as const,
+      maxAge: 60 * 5, // 5 minutes
+      path: "/",
+    }
+    cookieStore.set("authkit_2fa_email", parsed.data.email, opts)
+    cookieStore.set("authkit_2fa_password", parsed.data.password, opts)
     redirect(`/two-factor?userId=${user.id}`)
   }
 

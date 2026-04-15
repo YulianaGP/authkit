@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { useRouter } from "next/navigation"
-import { verifyTwoFactor } from "@/actions/two-factor"
+import { completeTwoFactorLogin } from "@/actions/two-factor"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,7 +13,6 @@ interface TwoFactorFormProps {
 }
 
 export function TwoFactorForm({ userId, callbackUrl = "/dashboard" }: TwoFactorFormProps) {
-  const router = useRouter()
   const [code, setCode] = useState("")
   const [error, setError] = useState("")
   const [isPending, startTransition] = useTransition()
@@ -24,12 +22,11 @@ export function TwoFactorForm({ userId, callbackUrl = "/dashboard" }: TwoFactorF
     e.preventDefault()
     setError("")
     startTransition(async () => {
-      const res = await verifyTwoFactor(userId, code)
-      if ("error" in res) {
+      const res = await completeTwoFactorLogin(userId, code, callbackUrl)
+      if (res && "error" in res) {
         setError(res.error)
-        return
       }
-      router.push(callbackUrl)
+      // On success, signIn throws NEXT_REDIRECT — no need to router.push
     })
   }
 
