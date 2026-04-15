@@ -60,7 +60,7 @@ export function LoginForm() {
           />
         </div>
 
-        {state?.error && (
+        {state && "error" in state && (
           <Alert variant="destructive">
             <AlertDescription>{state.error}</AlertDescription>
           </Alert>
