@@ -17,7 +17,7 @@ export async function completeOnboarding(
   if (!session?.user?.id) return { error: "Not authenticated" }
 
   const parsed = OnboardingSchema.safeParse({ name: formData.get("name") })
-  if (!parsed.success) return { error: parsed.error.errors[0].message }
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
 
   await db.user.update({
     where: { id: session.user.id },

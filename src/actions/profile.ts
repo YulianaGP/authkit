@@ -32,7 +32,7 @@ export async function updatePassword(data: UpdatePasswordInput): Promise<ActionR
   if (!session?.user?.id) return { error: "Not authenticated" }
 
   const parsed = UpdatePasswordSchema.safeParse(data)
-  if (!parsed.success) return { error: parsed.error.errors[0].message }
+  if (!parsed.success) return { error: parsed.error.issues[0].message }
 
   const user = await db.user.findUnique({ where: { id: session.user.id } })
   if (!user?.password) return { error: "No password set on this account" }
