@@ -13,7 +13,7 @@ export function ImpersonateButton({ userId }: { userId: string }) {
       size="sm"
       className="text-xs"
       disabled={isPending}
-      onClick={() => startTransition(() => startImpersonation(userId))}
+      onClick={() => startTransition(() => void startImpersonation(userId))}
     >
       {isPending ? "…" : "Impersonate"}
     </Button>
