@@ -1,6 +1,33 @@
 # AuthKit
 
-A production-ready Next.js authentication template. Everything you need to add secure auth to your SaaS — built, tested, and ready to ship.
+> Production-ready Next.js authentication starter. Everything you need to add secure, full-featured auth to your SaaS — built, tested, and ready to ship.
+
+[![🌐 Live Demo](https://img.shields.io/badge/🌐_Live_Demo-authkit.vercel.app-000?style=for-the-badge&logo=vercel)](https://authkit.vercel.app)
+
+---
+
+## Preview
+
+| Login | Dashboard |
+|---|---|
+| ![Login](./docs/preview-login.jpeg) | ![Dashboard](./docs/preview-dashboard.jpeg) |
+
+| Admin panel | Profile & 2FA |
+|---|---|
+| ![Admin](./docs/preview-admin.jpeg) | ![Profile](./docs/preview-profile.jpeg) |
+
+---
+
+## Why AuthKit?
+
+Most auth tutorials give you a login form. AuthKit gives you everything that comes after:
+
+- **2FA with TOTP** — Google Authenticator, Authy, 1Password — with 8 recovery codes
+- **Audit log** — every auth event tracked with IP, browser, OS, and geolocation
+- **Admin impersonation** — sign in as any user to debug issues; red banner + one-click exit
+- **Account lockout** — 10 failed attempts → 30-minute lockout, auto-reset on success
+- **Rate limiting** — login (5/15 min) and password reset (3/hour) via Upstash Redis
+- **Demo mode** — full flow works without Resend or any third-party service configured
 
 ---
 
@@ -16,8 +43,10 @@ A production-ready Next.js authentication template. Everything you need to add s
 ### Security
 - **Two-factor authentication** — TOTP via Google Authenticator, Authy, or 1Password
 - **Recovery codes** — 8 one-time codes generated on 2FA setup
-- **Rate limiting** — 5 login attempts per 15 minutes via Upstash Redis
+- **Rate limiting** — 5 login attempts per 15 min + 3 password reset requests per hour via Upstash Redis
+- **Account lockout** — 10 failed attempts → 30-minute lockout, auto-reset on success
 - **New location alert** — Email notification when login detected from a new country
+- **Case-insensitive email** — `Juan@Gmail.com` and `juan@gmail.com` are the same account
 - **Route protection** — `proxy.ts` guards all protected routes by role
 
 ### Sessions & Audit
@@ -61,7 +90,7 @@ A production-ready Next.js authentication template. Everything you need to add s
 ## Quick start
 
 ```bash
-git clone https://github.com/your-username/authkit.git
+git clone https://github.com/YulianaGP/authkit.git
 cd authkit
 npm install
 cp .env.example .env.local
@@ -72,6 +101,38 @@ npm run dev
 ```
 
 See [SETUP.md](./SETUP.md) for the full step-by-step guide including OAuth setup, email configuration, and Vercel deployment.
+
+---
+
+## Environment Variables
+
+```env
+# Database (Neon PostgreSQL)
+DATABASE_URL=""
+DATABASE_URL_UNPOOLED=""
+
+# NextAuth
+AUTH_SECRET=""            # openssl rand -hex 32
+AUTH_URL=""               # http://localhost:3000 in dev
+
+# OAuth — remove providers you don't need
+AUTH_GOOGLE_ID=""
+AUTH_GOOGLE_SECRET=""
+AUTH_GITHUB_ID=""
+AUTH_GITHUB_SECRET=""
+AUTH_DISCORD_ID=""
+AUTH_DISCORD_SECRET=""
+
+# Resend — leave empty to run in demo mode (auto-verifies accounts)
+RESEND_API_KEY=""
+RESEND_FROM_EMAIL=""
+
+# Upstash Redis — required for rate limiting
+UPSTASH_REDIS_REST_URL=""
+UPSTASH_REDIS_REST_TOKEN=""
+```
+
+> Full setup guide in [SETUP.md](./SETUP.md).
 
 ---
 
